@@ -40,6 +40,15 @@ $contentTemplate = $contentTemplate ?? null;
         .table-scroll { overflow-x: auto; }
         .col-datetime { width: 180px; min-width: 180px; white-space: nowrap; }
         .col-comment { width: auto; }
+        .status-block { margin: 1.25rem 0; background: #fff; padding: 1rem; border: 1px solid #e5e5e5; border-radius: 4px; }
+        .status-header { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .status-label { font-weight: 600; }
+        .badge { display: inline-block; background: #f3f4f6; color: #111827; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 600; border: 1px solid #d1d5db; }
+        .notice-inline { color: #0b6d0b; font-size: 0.9rem; }
+        .status-form { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-top: 0.25rem; }
+        .status-form select { min-width: 180px; }
+        .comment-form { margin: 0.75rem 0 1rem; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     </style>
 </head>
 <body>

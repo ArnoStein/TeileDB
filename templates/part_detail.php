@@ -2,27 +2,25 @@
 declare(strict_types=1);
 ?>
 <section>
-    <?php if (!empty($updated)): ?>
-        <div class="notice">Status gespeichert.</div>
-    <?php endif; ?>
-    <?php if (!empty($commented)): ?>
-        <div class="notice">Kommentar gespeichert.</div>
-    <?php endif; ?>
-
     <h2>Teil-Details</h2>
     <p><strong>Seriennummer:</strong> <?php echo e((string) ($part['serial_number'] ?? '')); ?></p>
     <p><strong>Teiltyp:</strong> <?php echo e((string) ($part['part_type_short_name'] ?? '')); ?> – <?php echo e((string) ($part['part_type_name'] ?? '')); ?></p>
-    <p><strong>Status:</strong> <?php echo e((string) ($part['status_name'] ?? '')); ?></p>
     <p><strong>Erstellt am:</strong> <?php echo e(isset($part['created_at']) ? date('d.m.Y H:i', strtotime((string) $part['created_at'])) : ''); ?></p>
 
-    <h3>Status ändern</h3>
-    <?php if (!empty($errors['global'])): ?>
-        <div class="error"><?php echo e($errors['global']); ?></div>
-    <?php endif; ?>
-    <form method="post" action="index.php?page=part_detail&id=<?php echo e((string) ($part['id'] ?? '')); ?>">
-        <input type="hidden" name="action" value="status_update">
-        <div class="form-group">
-            <label for="status_id">Status</label><br>
+    <div class="status-block">
+        <div class="status-header">
+            <span class="status-label">Status:</span>
+            <span class="badge"><?php echo e((string) ($part['status_name'] ?? '')); ?></span>
+            <?php if (!empty($updated)): ?>
+                <span class="notice-inline">Status gespeichert.</span>
+            <?php endif; ?>
+        </div>
+        <?php if (!empty($errors['global'])): ?>
+            <div class="error"><?php echo e($errors['global']); ?></div>
+        <?php endif; ?>
+        <form method="post" action="index.php?page=part_detail&id=<?php echo e((string) ($part['id'] ?? '')); ?>" class="status-form">
+            <input type="hidden" name="action" value="status_update">
+            <label for="status_id" class="visually-hidden">Status auswählen</label>
             <select id="status_id" name="status_id" required>
                 <?php foreach ($statuses as $status): ?>
                     <option value="<?php echo e((string) ($status['id'] ?? '')); ?>" <?php echo ((string) ($part['status_id'] ?? '') === (string) ($status['id'] ?? '')) ? 'selected' : ''; ?>>
@@ -33,11 +31,29 @@ declare(strict_types=1);
             <?php if (!empty($errors['status_id'])): ?>
                 <div class="error"><?php echo e($errors['status_id']); ?></div>
             <?php endif; ?>
-        </div>
-        <button type="submit">Status speichern</button>
-    </form>
+            <button type="submit">Status speichern</button>
+        </form>
+    </div>
 
     <h2 id="comments">Kommentare</h2>
+    <?php if (!empty($commented)): ?>
+        <div class="notice">Kommentar gespeichert.</div>
+    <?php endif; ?>
+    <?php if (!empty($commentErrors['global'])): ?>
+        <div class="error"><?php echo e($commentErrors['global']); ?></div>
+    <?php endif; ?>
+    <form method="post" action="index.php?page=part_detail&id=<?php echo e((string) ($part['id'] ?? '')); ?>#comments" class="comment-form">
+        <input type="hidden" name="action" value="comment_create">
+        <div class="form-group">
+            <label for="comment">Kommentar</label><br>
+            <textarea id="comment" name="comment" rows="4" cols="60" required><?php echo e((string) ($commentInput ?? '')); ?></textarea>
+            <?php if (!empty($commentErrors['comment'])): ?>
+                <div class="error"><?php echo e($commentErrors['comment']); ?></div>
+            <?php endif; ?>
+        </div>
+        <button type="submit">Kommentar speichern</button>
+    </form>
+
     <?php if (!empty($comments)): ?>
         <div class="table-scroll">
         <table class="tbl-fixed">
@@ -68,20 +84,4 @@ declare(strict_types=1);
     <?php else: ?>
         <div class="empty">Keine Kommentare vorhanden.</div>
     <?php endif; ?>
-
-    <h3>Neuen Kommentar hinzufügen</h3>
-    <?php if (!empty($commentErrors['global'])): ?>
-        <div class="error"><?php echo e($commentErrors['global']); ?></div>
-    <?php endif; ?>
-    <form method="post" action="index.php?page=part_detail&id=<?php echo e((string) ($part['id'] ?? '')); ?>#comments">
-        <input type="hidden" name="action" value="comment_create">
-        <div class="form-group">
-            <label for="comment">Kommentar</label><br>
-            <textarea id="comment" name="comment" rows="4" cols="60" required><?php echo e((string) ($commentInput ?? '')); ?></textarea>
-            <?php if (!empty($commentErrors['comment'])): ?>
-                <div class="error"><?php echo e($commentErrors['comment']); ?></div>
-            <?php endif; ?>
-        </div>
-        <button type="submit">Kommentar speichern</button>
-    </form>
 </section>
