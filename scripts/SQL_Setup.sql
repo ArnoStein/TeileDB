@@ -77,7 +77,10 @@ CREATE TABLE users (
   UNIQUE KEY uq_users_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+ALTER TABLE users
+  ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'admin' AFTER password_hash;
 
+  
 
 -- Optional: Beispiel-Startdaten (kannst du drin lassen oder entfernen)
 
