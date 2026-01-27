@@ -14,16 +14,46 @@ $partRepo = new PartRepository($ctx['pdo']);
 $statusRepo = new StatusRepository($ctx['pdo']);
 $commentRepo = new PartCommentRepository($ctx['pdo']);
 
+$serialNumberParam = $_GET['serial_number'] ?? '';
 $idParam = $_GET['id'] ?? null;
 $partId = is_numeric($idParam) ? (int) $idParam : 0;
-if ($partId <= 0) {
+$scanError = '';
+$part = null;
+
+if ($serialNumberParam !== '') {
+    try {
+        $serialPart = $partRepo->getPartBySerial((string) $serialNumberParam);
+        if ($serialPart !== null) {
+            $targetId = (int) ($serialPart['id'] ?? 0);
+            if ($targetId > 0 && $targetId !== $partId) {
+                header('Location: index.php?page=part_detail&id=' . $targetId);
+                exit;
+            }
+            $partId = $targetId;
+            $part = $serialPart;
+        } else {
+            $scanError = 'Seriennummer nicht gefunden: ' . $serialNumberParam;
+        }
+    } catch (Throwable $e) {
+        $ctx['logger']->error('Fehler beim Laden eines Teils per Seriennummer', [
+            'serial_number' => $serialNumberParam,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+        $scanError = 'Seriennummer nicht gefunden: ' . $serialNumberParam;
+    }
+}
+
+if ($partId <= 0 && $serialNumberParam === '') {
     http_response_code(404);
     echo 'Teil nicht gefunden.';
     return;
 }
 
 try {
-    $part = $partRepo->getPartById($partId);
+    if ($part === null) {
+        $part = $partRepo->getPartById($partId);
+    }
 } catch (Throwable $e) {
     $ctx['logger']->error('Fehler beim Laden eines Teils', [
         'part_id' => $partId,
@@ -35,7 +65,7 @@ try {
     return;
 }
 
-if ($part === null) {
+if ($part === null && $serialNumberParam === '') {
     http_response_code(404);
     echo 'Teil nicht gefunden.';
     return;
@@ -138,6 +168,7 @@ $viewData = [
     'updated' => isset($_GET['updated']) && $_GET['updated'] === '1',
     'commented' => isset($_GET['commented']) && $_GET['commented'] === '1',
     'comments' => $comments,
+    'scanError' => $scanError,
 ];
 
 require __DIR__ . '/../../templates/layout.php';

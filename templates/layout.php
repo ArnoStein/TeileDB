@@ -49,6 +49,10 @@ $contentTemplate = $contentTemplate ?? null;
         .status-form select { min-width: 180px; }
         .comment-form { margin: 0.75rem 0 1rem; }
         .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        .scan-form { margin: 0 0 1rem; background: #fff; padding: 0.75rem 0.9rem; border: 1px solid #e5e5e5; border-radius: 4px; }
+        .scan-form label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
+        .scan-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        .scan-controls input[type=\"text\"] { min-width: 220px; }
     </style>
 </head>
 <body>

@@ -6,25 +6,28 @@ Die Anwendung läuft auf einem Webspace (IONOS) mit PHP und einer SQL-Datenbank.
 
 Schwerpunkt: **Verständlichkeit, Stabilität, saubere Fehlerbehandlung**. Performance ist kein Kriterium.
 
-## Hauptfunktionen (geplant)
-- Teile anlegen, anzeigen, bearbeiten
-- Teile nach Status filtern/sortieren
-- Seriennummern verwalten (eindeutig, Text bis 20 Zeichen)
-- Status je Teil: genau ein Status (mit definierter Reihenfolge)
-- Optional (später): Login/Benutzerverwaltung, um Zugriff zu schützen
+## Hauptfunktionen (Stand jetzt)
+- Teile anlegen (Seriennummer Pflicht, eindeutig)
+- Teileliste mit Status-Filter (Dropdown nach Status-Namen) und Suche (Serial/Typ)
+- Teil-Detailseite: Status anzeigen/ändern, Kommentare anzeigen/hinzufügen
+- Seriennummern verwalten (Text ≤ 20, eindeutig)
+- Optional (später): Login/Benutzerverwaltung
 
 ## Datenmodell (Kurzüberblick)
-Ein "Teil" besitzt u.a. folgende Felder:
-- `name` (eindeutige Bezeichnung, bis 50 Zeichen)
-- `short_name` (Pflichtfeld, bis 20 Zeichen)
-- `serial_number` (eindeutig, Text bis 20 Zeichen)
-- `status` (genau ein Status, Reihenfolge definiert)
-- `created_at` (Zeitpunkt der Erstellung)
+Stammdaten:
+- `part_types`: `short_name` (Pflicht, ≤20), `name` (≤50)
+- `statuses`: `name`, optionale Reihenfolge
+
+Teile (`parts`):
+- `serial_number` (eindeutig, Text ≤20)
+- `part_type_id` (FK → `part_types`)
+- `status_id` (FK → `statuses`, genau einer)
+- `created_at`
 
 Seriennummern:
-- **Phase 1 (Start):** jede Zeichenkette ist erlaubt (bis max. Länge), solange sie eindeutig ist.
-- **Phase 2 (später):** optional Validierung gegen ein definiertes Seriennummer-Schema (z.B. Regex).
-- **Seriennummer-Generator:** optional denkbar, aber noch nicht festgelegt.
+- **Formulare (z.B. Teil anlegen):** Eingaben werden getrimmt, max. 20 Zeichen, keine Leerzeichen, müssen eindeutig sein.
+- **Scan-Feld auf Detailseite:** Eingabe wird **nicht** normalisiert (kein trim/upper/whitespace-removal); Wert wird 1:1 verwendet.
+- **Phase 2 (später):** optionale Validierung gegen ein Seriennummer-Schema (Regex) / Generator denkbar.
 
 Optional (später) Login:
 - Login-Daten werden in der Datenbank gespeichert (z.B. Tabelle `users`).
@@ -46,12 +49,9 @@ Optional (später) Login:
 - Ausgabe in HTML immer escaped (`htmlspecialchars`)
 - Trennung von Logik und Templates
 - Zentrale Fehlerbehandlung und Logging (Datei-Log unter `/storage/logs`)
-Seriennummern:
-- **Phase 1 (Start):** beliebige Zeichenkette ist erlaubt (bis max. Länge), solange sie eindeutig ist.
-  - Zusätzlich gilt: **keine Leerzeichen** (weder innen noch am Anfang/Ende).
-  - Eingaben werden defensiv normalisiert (`trim()`).
-- **Phase 2 (später):** optional Validierung gegen ein definiertes Seriennummer-Schema (z.B. Regex).
-- **Seriennummer-Generator:** optional denkbar, aber noch nicht festgelegt.
+
+Routing:
+- Einstieg über `public/index.php?page=...` (z.B. `?page=parts_list`, `?page=part_detail&id=123`).
 
 
 ## Technische Basis
@@ -74,16 +74,18 @@ Seriennummern:
 3. Webroot auf `/public` setzen (wenn möglich)
 4. Aufruf im Browser: `/public/index.php`
 
-## Roadmap (erster Wurf)
+## Roadmap (aktueller Stand)
+Vorhanden:
 1. Projektgerüst + Konfiguration + DB-Verbindung
 2. Zentrales Error-Handling + Logging
-3. Seite: Teile-Liste (Read)
-4. Seite: Teil anlegen (Create) inkl. einfacher Seriennummer-Regeln (Länge + UNIQUE)
-5. Seite: Teil bearbeiten (Update)
-6. Filter/Suche nach Status/Name/Seriennummer
-7. Optional später:
-   - Seriennummer-Schema validieren (konfigurierbar)
-   - Login/Benutzerverwaltung (Tabelle `users`, Session-basiert)
+3. Teileliste mit Status-Filter (Dropdown) und Suche
+4. Teil anlegen (Create) mit Seriennummer-Regeln (Trim, keine Leerzeichen, UNIQUE)
+5. Teil-Detailseite: Status ändern, Kommentare (anzeigen + hinzufügen), Scan-Einstieg per `serial_number`
+
+Optional später:
+- Seriennummer-Schema validieren (konfigurierbar)
+- Login/Benutzerverwaltung (Tabelle `users`, Session-basiert)
+- Status-Historie, ggf. weitere Pflegefunktionen
 
 ## Installation / Setup
 Datenbank (Schema) anlegen: TeileDB

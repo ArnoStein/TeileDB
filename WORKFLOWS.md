@@ -60,21 +60,19 @@ Grundregeln:
 ### Ablauf (GUI)
 1. Nutzer öffnet „Teil anlegen“.
 2. Anwendung zeigt Formular mit Feldern (Beispiel):
-   - `name` (bis 50 Zeichen, eindeutig)
-   - `short_name` (Pflichtfeld, bis 20 Zeichen)
    - `serial_number`:
       - wird defensiv normalisiert (`trim()`)
       - Länge ≤ 20 Zeichen
       - enthält **keine Leerzeichen**
-      - ist eindeutig (UNIQUE), sofern gefüllt
+      - ist eindeutig (UNIQUE)
    - `part_type` (Dropdown)
    - `status` (Dropdown; initialer Status)
 3. Nutzer füllt Formular aus und klickt „Speichern“.
 4. Anwendung validiert:
-   - Pflichtfelder (`short_name`, ggf. weitere) vorhanden
+   - Seriennummer nicht leer
    - Längenbegrenzungen eingehalten
-   - Eindeutigkeit von `name` (wenn als eindeutig definiert)
-   - Eindeutigkeit von `serial_number` (wenn gefüllt und als eindeutig definiert)
+   - keine Leerzeichen
+   - Eindeutigkeit von `serial_number`
 5. Anwendung speichert das Teil in `parts` und setzt `created_at`.
 6. Anwendung leitet weiter zur Teil-Detailseite (UC-03) oder zeigt Erfolgsseite.
 
@@ -102,14 +100,20 @@ Grundregeln:
 - Tabelle `part_comments` existiert.
 
 ### Ablauf (GUI)
-1. Nutzer öffnet Teil-Detailseite (z.B. „/part.php?id=123“).
+1. Nutzer öffnet Teil-Detailseite (z.B. `index.php?page=part_detail&id=123`).
 2. Anwendung lädt Teil-Daten und zeigt:
-   - Name, Short-Name, Seriennummer, Typ, created_at
+   - Seriennummer, Teiltyp (short_name + name), created_at
    - aktuellen Status (lesbar)
-3. Anwendung lädt alle Kommentare zu diesem Teil aus `part_comments` und zeigt sie chronologisch (älteste → neueste oder umgekehrt; Entscheidung ist UI-Detail).
+3. Anwendung lädt alle Kommentare zu diesem Teil aus `part_comments` und zeigt sie **neuester zuerst**.
 4. Seite bietet zwei Aktionen:
    - **Status ändern** (Dropdown + Button „Status speichern“)
    - **Neuen Kommentar hinzufügen** (Textfeld + Button „Kommentar speichern“)
+
+### Alternativer Einstieg (Scanner-first)
+- Oben auf der Detailseite steht ein GET-Formular `serial_number` (autofocus).
+- Handscanner füllt das Feld und sendet Enter → Request an `index.php?page=part_detail&serial_number=...`.
+- Anwendung sucht das Teil exakt per `parts.serial_number` (keine Normalisierung) und zeigt dessen Detailseite; bei Treffer erfolgt Redirect auf `?page=part_detail&id=...`.
+- Falls nicht gefunden, erscheint „Seriennummer nicht gefunden“ über den Details, aktuelle Seite bleibt.
 
 #### 3A – Status ändern
 5. Nutzer wählt neuen Status und klickt „Status speichern“.
@@ -125,7 +129,7 @@ Grundregeln:
    - Kommentartext nicht leer (und ggf. minimale/maximale Länge, falls definiert)
 7. Anwendung schreibt neuen Datensatz in `part_comments`:
    - `part_id`
-   - `comment_text`
+   - `comment`
    - `created_at`
 8. Anwendung zeigt Erfolgsmeldung und die aktualisierte Kommentarliste.
 
@@ -157,10 +161,10 @@ Grundregeln:
 **Akteur:** Nutzer
 
 ### Ablauf (GUI)
-1. Nutzer öffnet „Teileliste“.
+1. Nutzer öffnet „Teileliste“ (`index.php?page=parts_list`).
 2. Anwendung zeigt tabellarisch (Beispiel): short_name, name, Seriennummer, Typ, Status, created_at.
 3. Nutzer kann optional filtern/suchen:
-   - nach Status
+   - nach Status (Dropdown mit Status-Namen)
    - nach Name/Short-Name
    - nach Seriennummer
 4. Nutzer klickt auf ein Teil → öffnet UC-03.
@@ -179,4 +183,3 @@ Grundregeln:
   - Optionaler Generator ist möglich, aber aktuell nicht festgelegt.
 - Status-Historie:
   - Optional: Historie in separater Tabelle, um Änderungen nachzuverfolgen.
-

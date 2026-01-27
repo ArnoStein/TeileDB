@@ -2,6 +2,19 @@
 declare(strict_types=1);
 ?>
 <section>
+    <form method="get" action="index.php" class="scan-form">
+        <input type="hidden" name="page" value="part_detail">
+        <label for="serial_number">Seriennummer scannen</label>
+        <div class="scan-controls">
+            <input type="text" id="serial_number" name="serial_number" autofocus>
+            <button type="submit" class="visually-hidden">Anzeigen</button>
+        </div>
+    </form>
+    <?php if (!empty($scanError)): ?>
+        <div class="error"><?php echo e($scanError); ?></div>
+    <?php endif; ?>
+
+    <?php if ($part !== null): ?>
     <h2>Teil-Details</h2>
     <p><strong>Seriennummer:</strong> <?php echo e((string) ($part['serial_number'] ?? '')); ?></p>
     <p><strong>Teiltyp:</strong> <?php echo e((string) ($part['part_type_short_name'] ?? '')); ?> – <?php echo e((string) ($part['part_type_name'] ?? '')); ?></p>
@@ -83,5 +96,8 @@ declare(strict_types=1);
         </div>
     <?php else: ?>
         <div class="empty">Keine Kommentare vorhanden.</div>
+    <?php endif; ?>
+    <?php else: ?>
+        <div class="empty">Kein Teil geladen. Bitte Seriennummer scannen.</div>
     <?php endif; ?>
 </section>

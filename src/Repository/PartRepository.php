@@ -76,6 +76,26 @@ class PartRepository
         }
     }
 
+    public function getPartBySerial(string $serialNumber): ?array
+    {
+        $sql = 'SELECT p.id, p.serial_number, p.part_type_id, pt.short_name AS part_type_short_name, '
+            . 'pt.name AS part_type_name, p.status_id, s.name AS status_name, p.created_at '
+            . 'FROM parts p '
+            . 'JOIN part_types pt ON pt.id = p.part_type_id '
+            . 'JOIN statuses s ON s.id = p.status_id '
+            . 'WHERE p.serial_number = :serial_number '
+            . 'LIMIT 1';
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':serial_number', $serialNumber);
+            $stmt->execute();
+            $row = $stmt->fetch();
+            return $row === false ? null : $row;
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to fetch part by serial number', 0, $e);
+        }
+    }
+
     /**
      * @param array{serial_number:string, part_type_id:int, status_id:int} $data
      */
