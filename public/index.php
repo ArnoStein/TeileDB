@@ -21,6 +21,15 @@ switch ($page) {
     case 'part_types_create':
         require __DIR__ . '/../src/Pages/part_types_create.php';
         break;
+    case 'login':
+        require __DIR__ . '/../src/Pages/login.php';
+        break;
+    case 'logout':
+        require __DIR__ . '/../src/Pages/logout.php';
+        break;
+    case 'account':
+        require __DIR__ . '/../src/Pages/account.php';
+        break;
     default:
         http_response_code(404);
         header('Content-Type: text/plain; charset=utf-8');

@@ -66,6 +66,19 @@ CREATE TABLE part_comments (
     ON UPDATE RESTRICT ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 5) Logon-Daten für Benutzer
+CREATE TABLE users (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  password_hash VARCHAR(255) NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_login_at TIMESTAMP NULL,
+  UNIQUE KEY uq_users_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 -- Optional: Beispiel-Startdaten (kannst du drin lassen oder entfernen)
 
 INSERT INTO part_types (name, short_name, description)

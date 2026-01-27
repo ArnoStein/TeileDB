@@ -11,6 +11,7 @@ if (!function_exists('e')) {
 $title = isset($pageTitle) && $pageTitle !== '' ? $pageTitle : 'TeileDB';
 $viewData = $viewData ?? [];
 $contentTemplate = $contentTemplate ?? null;
+$isLoggedIn = $viewData['isLoggedIn'] ?? false;
 ?><!doctype html>
 <html lang="de">
 <head>
@@ -23,6 +24,9 @@ $contentTemplate = $contentTemplate ?? null;
         nav { margin-bottom: 1.5rem; }
         nav a { margin-right: 1rem; text-decoration: none; color: #0d47a1; }
         nav a:hover { text-decoration: underline; }
+        .auth-links { float: right; font-size: 0.9rem; }
+        .auth-links a { margin-left: 0.75rem; color: #555; text-decoration: none; }
+        .auth-links a:hover { text-decoration: underline; }
         table { border-collapse: collapse; width: 100%; background: #fff; }
         th, td { padding: 0.75rem; border-bottom: 1px solid #e5e5e5; text-align: left; }
         th { background: #fafafa; }
@@ -58,6 +62,13 @@ $contentTemplate = $contentTemplate ?? null;
 <body>
 <header>
     <h1><?php echo e($title); ?></h1>
+    <?php if ($isLoggedIn): ?>
+        <div class="auth-links">
+            <a href="index.php?page=account">Passwort ändern</a>
+            <a href="index.php?page=logout">Logout</a>
+        </div>
+        <div style="clear: both;"></div>
+    <?php endif; ?>
 </header>
 <nav>
     <a href="index.php?page=parts_list">Teileliste</a>

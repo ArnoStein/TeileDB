@@ -4,11 +4,15 @@ declare(strict_types=1);
 use App\Repository\PartRepository;
 use App\Repository\StatusRepository;
 use App\Repository\PartCommentRepository;
+use App\Auth\Auth;
 use Throwable;
 
+require_once __DIR__ . '/../Auth/Auth.php';
 require_once __DIR__ . '/../Repository/PartRepository.php';
 require_once __DIR__ . '/../Repository/StatusRepository.php';
 require_once __DIR__ . '/../Repository/PartCommentRepository.php';
+
+Auth::requireLogin();
 
 $partRepo = new PartRepository($ctx['pdo']);
 $statusRepo = new StatusRepository($ctx['pdo']);
@@ -169,6 +173,7 @@ $viewData = [
     'commented' => isset($_GET['commented']) && $_GET['commented'] === '1',
     'comments' => $comments,
     'scanError' => $scanError,
+    'isLoggedIn' => Auth::check(),
 ];
 
 require __DIR__ . '/../../templates/layout.php';

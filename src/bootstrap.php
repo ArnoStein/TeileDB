@@ -11,6 +11,10 @@ require_once __DIR__ . '/Db/Connection.php';
 
 date_default_timezone_set('Europe/Berlin');
 
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
 $config = require __DIR__ . '/../config/config.example.php';
 if (!is_array($config)) {
     throw new RuntimeException('Konfiguration konnte nicht geladen werden.');

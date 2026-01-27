@@ -4,11 +4,15 @@ declare(strict_types=1);
 use App\Repository\PartRepository;
 use App\Repository\PartTypeRepository;
 use App\Repository\StatusRepository;
+use App\Auth\Auth;
 use Throwable;
 
+require_once __DIR__ . '/../Auth/Auth.php';
 require_once __DIR__ . '/../Repository/PartRepository.php';
 require_once __DIR__ . '/../Repository/PartTypeRepository.php';
 require_once __DIR__ . '/../Repository/StatusRepository.php';
+
+Auth::requireLogin();
 
 $partRepo = new PartRepository($ctx['pdo']);
 $partTypeRepo = new PartTypeRepository($ctx['pdo']);
@@ -117,6 +121,7 @@ $viewData = [
     'formData' => $formData,
     'partTypes' => $partTypes,
     'statuses' => $statuses,
+    'isLoggedIn' => Auth::check(),
 ];
 
 require __DIR__ . '/../../templates/layout.php';

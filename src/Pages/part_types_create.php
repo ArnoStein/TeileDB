@@ -2,9 +2,13 @@
 declare(strict_types=1);
 
 use App\Repository\PartTypeRepository;
+use App\Auth\Auth;
 use Throwable;
 
+require_once __DIR__ . '/../Auth/Auth.php';
 require_once __DIR__ . '/../Repository/PartTypeRepository.php';
+
+Auth::requireLogin();
 
 $repository = new PartTypeRepository($ctx['pdo']);
 
@@ -73,6 +77,7 @@ $contentTemplate = __DIR__ . '/../../templates/part_types_create.php';
 $viewData = [
     'errors' => $errors,
     'formData' => $formData,
+    'isLoggedIn' => Auth::check(),
 ];
 
 require __DIR__ . '/../../templates/layout.php';
