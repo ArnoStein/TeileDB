@@ -1,0 +1,87 @@
+<?php
+declare(strict_types=1);
+?>
+<section>
+    <?php if (!empty($updated)): ?>
+        <div class="notice">Status gespeichert.</div>
+    <?php endif; ?>
+    <?php if (!empty($commented)): ?>
+        <div class="notice">Kommentar gespeichert.</div>
+    <?php endif; ?>
+
+    <h2>Teil-Details</h2>
+    <p><strong>Seriennummer:</strong> <?php echo e((string) ($part['serial_number'] ?? '')); ?></p>
+    <p><strong>Teiltyp:</strong> <?php echo e((string) ($part['part_type_short_name'] ?? '')); ?> – <?php echo e((string) ($part['part_type_name'] ?? '')); ?></p>
+    <p><strong>Status:</strong> <?php echo e((string) ($part['status_name'] ?? '')); ?></p>
+    <p><strong>Erstellt am:</strong> <?php echo e(isset($part['created_at']) ? date('d.m.Y H:i', strtotime((string) $part['created_at'])) : ''); ?></p>
+
+    <h3>Status ändern</h3>
+    <?php if (!empty($errors['global'])): ?>
+        <div class="error"><?php echo e($errors['global']); ?></div>
+    <?php endif; ?>
+    <form method="post" action="index.php?page=part_detail&id=<?php echo e((string) ($part['id'] ?? '')); ?>">
+        <input type="hidden" name="action" value="status_update">
+        <div class="form-group">
+            <label for="status_id">Status</label><br>
+            <select id="status_id" name="status_id" required>
+                <?php foreach ($statuses as $status): ?>
+                    <option value="<?php echo e((string) ($status['id'] ?? '')); ?>" <?php echo ((string) ($part['status_id'] ?? '') === (string) ($status['id'] ?? '')) ? 'selected' : ''; ?>>
+                        <?php echo e((string) ($status['name'] ?? '')); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <?php if (!empty($errors['status_id'])): ?>
+                <div class="error"><?php echo e($errors['status_id']); ?></div>
+            <?php endif; ?>
+        </div>
+        <button type="submit">Status speichern</button>
+    </form>
+
+    <h2 id="comments">Kommentare</h2>
+    <?php if (!empty($comments)): ?>
+        <div class="table-scroll">
+        <table class="tbl-fixed">
+            <colgroup>
+                <col class="col-datetime">
+                <col class="col-comment">
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Datum + Uhrzeit</th>
+                <th>Kommentar</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($comments as $comment): ?>
+                <tr>
+                    <td class="cell nowrap">
+                        <?php echo e(isset($comment['created_at']) ? date('d.m.Y H:i', strtotime((string) $comment['created_at'])) : ''); ?>
+                    </td>
+                    <td class="cell">
+                        <?php echo nl2br(e((string) ($comment['comment'] ?? '')), false); ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        </div>
+    <?php else: ?>
+        <div class="empty">Keine Kommentare vorhanden.</div>
+    <?php endif; ?>
+
+    <h3>Neuen Kommentar hinzufügen</h3>
+    <?php if (!empty($commentErrors['global'])): ?>
+        <div class="error"><?php echo e($commentErrors['global']); ?></div>
+    <?php endif; ?>
+    <form method="post" action="index.php?page=part_detail&id=<?php echo e((string) ($part['id'] ?? '')); ?>#comments">
+        <input type="hidden" name="action" value="comment_create">
+        <div class="form-group">
+            <label for="comment">Kommentar</label><br>
+            <textarea id="comment" name="comment" rows="4" cols="60" required><?php echo e((string) ($commentInput ?? '')); ?></textarea>
+            <?php if (!empty($commentErrors['comment'])): ?>
+                <div class="error"><?php echo e($commentErrors['comment']); ?></div>
+            <?php endif; ?>
+        </div>
+        <button type="submit">Kommentar speichern</button>
+    </form>
+</section>
