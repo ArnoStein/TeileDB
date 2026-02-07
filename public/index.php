@@ -30,6 +30,9 @@ switch ($page) {
     case 'account':
         require __DIR__ . '/../src/Pages/account.php';
         break;
+    case 'info':
+        require __DIR__ . '/../src/Pages/info.php';
+        break;
     default:
         http_response_code(404);
         header('Content-Type: text/plain; charset=utf-8');

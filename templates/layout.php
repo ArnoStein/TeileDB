@@ -57,6 +57,9 @@ $isLoggedIn = $viewData['isLoggedIn'] ?? false;
         .scan-form label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
         .scan-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
         .scan-controls input[type=\"text\"] { min-width: 220px; }
+        .filters-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+        .filters-grid .field { display: block; }
+        .hint { font-size: 0.9em; opacity: 0.85; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -64,6 +67,7 @@ $isLoggedIn = $viewData['isLoggedIn'] ?? false;
     <h1><?php echo e($title); ?></h1>
     <?php if ($isLoggedIn): ?>
         <div class="auth-links">
+            <a href="index.php?page=info">Info</a>
             <a href="index.php?page=account">Passwort ändern</a>
             <a href="index.php?page=logout">Logout</a>
         </div>

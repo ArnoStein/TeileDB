@@ -5,23 +5,40 @@ declare(strict_types=1);
 <section class="filters">
     <form method="get">
         <input type="hidden" name="page" value="parts_list">
-        <label>
-            Suche (Serial/Typ):
-            <input type="text" name="q" value="<?php echo isset($filters['search']) ? e((string) $filters['search']) : ''; ?>" placeholder="SN-… oder Typ">
-        </label>
-        <label>
-            Status:
-            <select name="status_id">
-                <option value="">Alle</option>
-                <?php if (!empty($statuses)): ?>
-                    <?php foreach ($statuses as $status): ?>
-                        <option value="<?php echo e((string) ($status['id'] ?? '')); ?>" <?php echo ((string) ($selectedStatusId ?? '') === (string) ($status['id'] ?? '')) ? 'selected' : ''; ?>>
-                            <?php echo e((string) ($status['name'] ?? '')); ?>
-                        </option>
-                    <?php endforeach; ?>
+        <div class="filters-grid">
+            <div class="field">
+                <label>
+                    Seriennummer:
+                    <input type="text" name="serial_number" <?php echo !empty($focusSerial) ? 'autofocus' : ''; ?> value="<?php echo e((string) (!empty($clearSerialInput) ? '' : ($serialInput ?? ''))); ?>" placeholder="8HEX, xx-xx-xx-xx, SN:xx-xx-xx-xx, G…">
+                </label>
+                <?php if (!empty($filterErrors['serial_number'])): ?>
+                    <div class="error"><?php echo e((string) $filterErrors['serial_number']); ?></div>
+                <?php elseif (!empty($serialCanonical)): ?>
+                    <div class="hint">Ermittelt: <?php echo e((string) $serialCanonical); ?></div>
+                <?php else: ?>
+                    <div class="hint">&nbsp;</div>
                 <?php endif; ?>
-            </select>
-        </label>
+            </div>
+            <div class="field">
+                <label>
+                    Suche (Serial/Typ):
+                    <input type="text" name="q" value="<?php echo isset($filters['search']) ? e((string) $filters['search']) : ''; ?>" placeholder="SN-… oder Typ">
+                </label>
+                <label>
+                    Status:
+                    <select name="status_id">
+                        <option value="">Alle</option>
+                        <?php if (!empty($statuses)): ?>
+                            <?php foreach ($statuses as $status): ?>
+                                <option value="<?php echo e((string) ($status['id'] ?? '')); ?>" <?php echo ((string) ($selectedStatusId ?? '') === (string) ($status['id'] ?? '')) ? 'selected' : ''; ?>>
+                                    <?php echo e((string) ($status['name'] ?? '')); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </label>
+            </div>
+        </div>
         <button type="submit">Filtern</button>
     </form>
 </section>
@@ -47,8 +64,9 @@ declare(strict_types=1);
     <tbody>
     <?php foreach ($parts as $part): ?>
         <tr>
+            <?php $serialDisplay = \App\Support\SerialFormatter::formatForDisplay((string) ($part['serial_number'] ?? '')); ?>
             <td class="cell ellipsis nowrap" title="<?php echo e((string) ($part['serial_number'] ?? '')); ?>">
-                <?php echo e((string) ($part['serial_number'] ?? '')); ?>
+                <?php echo e((string) $serialDisplay); ?>
             </td>
             <td class="cell ellipsis" title="<?php echo e((string) ($part['part_type_name'] ?? '')); ?>">
                 <?php echo e((string) ($part['part_type_short_name'] ?? '')); ?>

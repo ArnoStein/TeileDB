@@ -38,6 +38,11 @@ class PartRepository
             $params['search'] = '%' . trim((string) $filters['search']) . '%';
         }
 
+        if (isset($filters['serial_number']) && $filters['serial_number'] !== '') {
+            $conditions[] = 'p.serial_number = :serial_number';
+            $params['serial_number'] = $filters['serial_number'];
+        }
+
         if ($conditions !== []) {
             $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }

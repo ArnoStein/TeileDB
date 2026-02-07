@@ -12,6 +12,7 @@ declare(strict_types=1);
         <div class="form-group">
             <label for="serial_number">Seriennummer *</label><br>
             <input type="text" id="serial_number" name="serial_number" maxlength="20" value="<?php echo e((string) ($formData['serial_number'] ?? '')); ?>" required>
+            <div class="hint">Erlaubte Formate: 8HEX, xx-xx-xx-xx, SN:xx-xx-xx-xx (Legacy), optional Barcode GXXXXXXXX-XXXX.</div>
             <?php if (!empty($errors['serial_number'])): ?>
                 <div class="error"><?php echo e($errors['serial_number']); ?></div>
             <?php endif; ?>

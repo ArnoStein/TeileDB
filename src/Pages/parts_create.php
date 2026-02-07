@@ -5,12 +5,14 @@ use App\Repository\PartRepository;
 use App\Repository\PartTypeRepository;
 use App\Repository\StatusRepository;
 use App\Auth\Auth;
+use App\Domain\SerialNumber;
 use Throwable;
 
 require_once __DIR__ . '/../Auth/Auth.php';
 require_once __DIR__ . '/../Repository/PartRepository.php';
 require_once __DIR__ . '/../Repository/PartTypeRepository.php';
 require_once __DIR__ . '/../Repository/StatusRepository.php';
+require_once __DIR__ . '/../Domain/SerialNumber.php';
 
 Auth::requireLogin();
 
@@ -24,6 +26,7 @@ $formData = [
     'part_type_id' => '',
     'status_id' => '',
 ];
+$canonicalSerial = null;
 
 try {
     $partTypes = $partTypeRepo->listPartTypes();
@@ -39,7 +42,7 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $formData['serial_number'] = trim((string) ($_POST['serial_number'] ?? ''));
+    $formData['serial_number'] = (string) ($_POST['serial_number'] ?? '');
     $formData['part_type_id'] = (string) ($_POST['part_type_id'] ?? '');
     $formData['status_id'] = (string) ($_POST['status_id'] ?? '');
 
@@ -47,10 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($formData['serial_number'] === '') {
         $errors['serial_number'] = 'Seriennummer ist erforderlich.';
-    } elseif (mb_strlen($formData['serial_number']) > 20) {
-        $errors['serial_number'] = 'Seriennummer darf höchstens 20 Zeichen lang sein.';
-    } elseif (preg_match('/\s/', $formData['serial_number'])) {
-        $errors['serial_number'] = 'Seriennummer darf keine Leerzeichen enthalten.';
+    } else {
+        $result = SerialNumber::parse($formData['serial_number']);
+        if ($result->ok === false) {
+            $errors['serial_number'] = $result->errorMessage ?? 'Ungültige Seriennummer.';
+        } else {
+            $canonicalSerial = $result->canonical;
+        }
     }
 
     $partTypeId = ctype_digit($formData['part_type_id']) ? (int) $formData['part_type_id'] : 0;
@@ -88,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($errors === []) {
         try {
             $partRepo->createPart([
-                'serial_number' => $formData['serial_number'],
+                'serial_number' => (string) $canonicalSerial,
                 'part_type_id' => $partTypeId,
                 'status_id' => $statusId,
             ]);
@@ -100,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($e->getMessage() === 'duplicate_serial_number' || ($prev instanceof \PDOException && $prev->getCode() === '23000')) {
                 $errors['serial_number'] = 'Seriennummer existiert bereits.';
                 $ctx['logger']->error('Duplicate serial number', [
-                    'serial_number' => $formData['serial_number'],
+                    'serial_number' => $canonicalSerial ?? $formData['serial_number'],
                     'error' => $e->getMessage(),
                 ]);
             } else {

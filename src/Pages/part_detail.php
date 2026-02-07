@@ -5,12 +5,14 @@ use App\Repository\PartRepository;
 use App\Repository\StatusRepository;
 use App\Repository\PartCommentRepository;
 use App\Auth\Auth;
+use App\Domain\SerialNumber;
 use Throwable;
 
 require_once __DIR__ . '/../Auth/Auth.php';
 require_once __DIR__ . '/../Repository/PartRepository.php';
 require_once __DIR__ . '/../Repository/StatusRepository.php';
 require_once __DIR__ . '/../Repository/PartCommentRepository.php';
+require_once __DIR__ . '/../Domain/SerialNumber.php';
 
 Auth::requireLogin();
 
@@ -23,28 +25,41 @@ $idParam = $_GET['id'] ?? null;
 $partId = is_numeric($idParam) ? (int) $idParam : 0;
 $scanError = '';
 $part = null;
+$scanCanonical = null;
 
 if ($serialNumberParam !== '') {
-    try {
-        $serialPart = $partRepo->getPartBySerial((string) $serialNumberParam);
-        if ($serialPart !== null) {
-            $targetId = (int) ($serialPart['id'] ?? 0);
-            if ($targetId > 0 && $targetId !== $partId) {
-                header('Location: index.php?page=part_detail&id=' . $targetId);
-                exit;
-            }
-            $partId = $targetId;
-            $part = $serialPart;
+    $scanInput = rtrim((string) $serialNumberParam, "\r\n");
+
+    if ($scanInput === '') {
+        $scanError = 'Ungültiges Format';
+    } else {
+        $parseResult = SerialNumber::parse($scanInput);
+        if ($parseResult->ok === false) {
+            $scanError = $parseResult->errorMessage ?? 'Ungültiges Format';
         } else {
-            $scanError = 'Seriennummer nicht gefunden: ' . $serialNumberParam;
+            $scanCanonical = $parseResult->canonical;
+            try {
+                $serialPart = $partRepo->getPartBySerial((string) $scanCanonical);
+                if ($serialPart !== null) {
+                    $targetId = (int) ($serialPart['id'] ?? 0);
+                    if ($targetId > 0 && $targetId !== $partId) {
+                        header('Location: index.php?page=part_detail&id=' . $targetId);
+                        exit;
+                    }
+                    $partId = $targetId;
+                    $part = $serialPart;
+                } else {
+                    $scanError = 'Seriennummer nicht gefunden: ' . $scanCanonical;
+                }
+            } catch (Throwable $e) {
+                $ctx['logger']->error('Fehler beim Laden eines Teils per Seriennummer', [
+                    'serial_number' => $scanCanonical,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                $scanError = 'Seriennummer nicht gefunden: ' . $scanCanonical;
+            }
         }
-    } catch (Throwable $e) {
-        $ctx['logger']->error('Fehler beim Laden eines Teils per Seriennummer', [
-            'serial_number' => $serialNumberParam,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-        $scanError = 'Seriennummer nicht gefunden: ' . $serialNumberParam;
     }
 }
 

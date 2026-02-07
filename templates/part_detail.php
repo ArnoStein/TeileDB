@@ -16,7 +16,7 @@ declare(strict_types=1);
 
     <?php if ($part !== null): ?>
     <h2>Teil-Details</h2>
-    <p><strong>Seriennummer:</strong> <?php echo e((string) ($part['serial_number'] ?? '')); ?></p>
+    <p><strong>Seriennummer:</strong> <?php echo e((string) \App\Support\SerialFormatter::formatForDisplay((string) ($part['serial_number'] ?? ''))); ?></p>
     <p><strong>Teiltyp:</strong> <?php echo e((string) ($part['part_type_short_name'] ?? '')); ?> – <?php echo e((string) ($part['part_type_name'] ?? '')); ?></p>
     <p><strong>Erstellt am:</strong> <?php echo e(isset($part['created_at']) ? date('d.m.Y H:i', strtotime((string) $part['created_at'])) : ''); ?></p>
 
