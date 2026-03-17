@@ -5,8 +5,6 @@ use App\Auth\Auth;
 use App\Repository\UserRepository;
 use Throwable;
 
-require_once __DIR__ . '/../Auth/Auth.php';
-require_once __DIR__ . '/../Repository/UserRepository.php';
 
 if (Auth::check()) {
     header('Location: index.php?page=parts_list');

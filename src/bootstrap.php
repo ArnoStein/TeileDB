@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use App\Support\Logger;
+use App\Db\Config;
 use App\Db\Connection;
-use RuntimeException;
+use App\Support\Logger;
 use Throwable;
 
 spl_autoload_register(function (string $class): void {
@@ -20,29 +20,15 @@ spl_autoload_register(function (string $class): void {
     }
 });
 
-require_once __DIR__ . '/Support/Logger.php';
-require_once __DIR__ . '/Db/Connection.php';
-
 date_default_timezone_set('Europe/Berlin');
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-$config = require __DIR__ . '/../config/config.example.php';
-if (!is_array($config)) {
-    throw new RuntimeException('Konfiguration konnte nicht geladen werden.');
-}
-$localConfigFile = __DIR__ . '/../config/config.local.php';
-// config.local.php enthält sensible Daten und gehört nicht ins Repo.
-if (is_file($localConfigFile)) {
-    $localConfig = require $localConfigFile;
-    if (is_array($localConfig)) {
-        $config = array_replace_recursive($config, $localConfig);
-    }
-}
-
-$logger = new Logger($config['log_file'] ?? (__DIR__ . '/../storage/logs/app.log'));
+$projectRoot = dirname(__DIR__);
+$config = Config::load($projectRoot);
+$logger = new Logger($config['log_file'] ?? ($projectRoot . '/storage/logs/app.log'));
 
 set_exception_handler(function (Throwable $e) use ($logger): void {
     $context = [

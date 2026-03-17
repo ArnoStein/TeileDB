@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 use App\Domain\SerialNumber;
 use App\Domain\SerialNumberResult;
-use App\Support\Crc16;
+use App\Domain\Crc16;
 
-require_once __DIR__ . '/../src/Support/Crc16.php';
+require_once __DIR__ . '/../src/Domain/Crc16.php';
 require_once __DIR__ . '/../src/Domain/SerialNumberResult.php';
 require_once __DIR__ . '/../src/Domain/SerialNumber.php';
 

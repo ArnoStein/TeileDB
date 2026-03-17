@@ -5,8 +5,6 @@ use App\Repository\PartTypeRepository;
 use App\Auth\Auth;
 use Throwable;
 
-require_once __DIR__ . '/../Auth/Auth.php';
-require_once __DIR__ . '/../Repository/PartTypeRepository.php';
 
 Auth::requireLogin();
 

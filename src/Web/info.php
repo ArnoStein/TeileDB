@@ -4,8 +4,6 @@ declare(strict_types=1);
 use App\Auth\Auth;
 use App\AppVersion;
 
-require_once __DIR__ . '/../Auth/Auth.php';
-require_once __DIR__ . '/../AppVersion.php';
 
 Auth::requireLogin();
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Support\Crc16;
+use App\Domain\Crc16;
 
 class SerialNumber
 {

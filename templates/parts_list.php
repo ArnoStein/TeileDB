@@ -64,7 +64,7 @@ declare(strict_types=1);
     <tbody>
     <?php foreach ($parts as $part): ?>
         <tr>
-            <?php $serialDisplay = \App\Support\SerialFormatter::formatForDisplay((string) ($part['serial_number'] ?? '')); ?>
+            <?php $serialDisplay = \App\Domain\SerialFormatter::formatForDisplay((string) ($part['serial_number'] ?? '')); ?>
             <td class="cell ellipsis nowrap" title="<?php echo e((string) ($part['serial_number'] ?? '')); ?>">
                 <?php echo e((string) $serialDisplay); ?>
             </td>

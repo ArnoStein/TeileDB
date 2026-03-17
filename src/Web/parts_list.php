@@ -7,10 +7,6 @@ use App\Auth\Auth;
 use App\Domain\SerialNumber;
 use Throwable;
 
-require_once __DIR__ . '/../Auth/Auth.php';
-require_once __DIR__ . '/../Repository/PartRepository.php';
-require_once __DIR__ . '/../Repository/StatusRepository.php';
-require_once __DIR__ . '/../Domain/SerialNumber.php';
 
 Auth::requireLogin();
 

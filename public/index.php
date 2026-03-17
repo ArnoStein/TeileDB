@@ -7,31 +7,31 @@ $page = $_GET['page'] ?? 'parts_list';
 
 switch ($page) {
     case 'parts_list':
-        require __DIR__ . '/../src/Pages/parts_list.php';
+        require __DIR__ . '/../src/Web/parts_list.php';
         break;
     case 'parts_create':
-        require __DIR__ . '/../src/Pages/parts_create.php';
+        require __DIR__ . '/../src/Web/parts_create.php';
         break;
     case 'part_detail':
-        require __DIR__ . '/../src/Pages/part_detail.php';
+        require __DIR__ . '/../src/Web/part_detail.php';
         break;
     case 'part_types_list':
-        require __DIR__ . '/../src/Pages/part_types_list.php';
+        require __DIR__ . '/../src/Web/part_types_list.php';
         break;
     case 'part_types_create':
-        require __DIR__ . '/../src/Pages/part_types_create.php';
+        require __DIR__ . '/../src/Web/part_types_create.php';
         break;
     case 'login':
-        require __DIR__ . '/../src/Pages/login.php';
+        require __DIR__ . '/../src/Web/login.php';
         break;
     case 'logout':
-        require __DIR__ . '/../src/Pages/logout.php';
+        require __DIR__ . '/../src/Web/logout.php';
         break;
     case 'account':
-        require __DIR__ . '/../src/Pages/account.php';
+        require __DIR__ . '/../src/Web/account.php';
         break;
     case 'info':
-        require __DIR__ . '/../src/Pages/info.php';
+        require __DIR__ . '/../src/Web/info.php';
         break;
     default:
         http_response_code(404);
